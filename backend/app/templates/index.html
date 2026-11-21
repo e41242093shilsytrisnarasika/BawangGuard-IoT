@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BawangGuard IoT — Monitoring Kesesuaian Lahan Bawang Merah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+</head>
+<body>
+  <div class="bg-field" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-name">BawangGuard IoT</p>
+        <p class="brand-tag">AI · Sensor Tanah · Bawang Merah</p>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span id="seasonBadge" class="chip season">Musim —</span>
+      <span id="methodBadge" class="chip">Fuzzy Logic</span>
+      <button type="button" class="btn ghost" id="btnNotif" aria-label="Notifikasi">
+        Notifikasi <span id="notifCount" class="badge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="hero-status" id="statusHero">
+      <div class="hero-copy">
+        <p class="eyebrow">Status kesesuaian lahan</p>
+        <h1 id="statusTitle">Memuat…</h1>
+        <p id="statusSummary" class="lede">Menunggu data sensor lapangan.</p>
+        <div class="hero-actions">
+          <button type="button" class="btn primary" id="btnSimulateIdeal">Simulasi Ideal</button>
+          <button type="button" class="btn" id="btnSimulateRandom">Data Sensor Acak</button>
+          <button type="button" class="btn" id="btnSimulateProblem">Skenario Bermasalah</button>
+        </div>
+      </div>
+      <div class="score-ring-wrap">
+        <div class="score-ring" id="scoreRing">
+          <span id="scoreValue">—</span>
+          <small>skor AI</small>
+        </div>
+        <p class="node-line">Node: <strong id="nodeId">—</strong> · <span id="updatedAt">—</span></p>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Pembacaan sensor">
+      <article class="metric" data-key="moisture">
+        <p class="metric-label">Kelembapan Tanah</p>
+        <p class="metric-value"><span id="mMoisture">—</span><small>%</small></p>
+        <p class="metric-ideal">Ideal 50–70%</p>
+        <div class="bar"><i id="barMoisture"></i></div>
+      </article>
+      <article class="metric" data-key="temp">
+        <p class="metric-label">Suhu Tanah</p>
+        <p class="metric-value"><span id="mTemp">—</span><small>°C</small></p>
+        <p class="metric-ideal">Ideal 25–32°C</p>
+        <div class="bar"><i id="barTemp"></i></div>
+      </article>
+      <article class="metric" data-key="ph">
+        <p class="metric-label">pH Tanah</p>
+        <p class="metric-value"><span id="mPh">—</span></p>
+        <p class="metric-ideal">Ideal 5,5–6,5</p>
+        <div class="bar"><i id="barPh"></i></div>
+      </article>
+      <article class="metric" data-key="drainage">
+        <p class="metric-label">Drainase</p>
+        <p class="metric-value"><span id="mDrain">—</span></p>
+        <p class="metric-ideal">Skor ≥ 0,6</p>
+        <div class="bar"><i id="barDrain"></i></div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Tren Sensor Lapangan</h2>
+          <p>Kelembapan, suhu, dan pH dari node ESP32</p>
+        </header>
+        <canvas id="trendChart" height="140"></canvas>
+      </article>
+
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Distribusi Status & Musim</h2>
+          <p>Klasifikasi AI pada data monitoring terkini</p>
+        </header>
+        <div class="chart-split">
+          <canvas id="statusChart" height="140"></canvas>
+          <ul class="status-legend" id="statusLegend"></ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="panel" id="recommendPanel">
+        <header class="panel-head">
+          <h2>Rekomendasi AI</h2>
+          <p id="recSummary">Faktor pembatas, pupuk, amelioran, dan metode budidaya</p>
+        </header>
+        <div class="rec-grid">
+          <div>
+            <h3>Faktor Pembatas</h3>
+            <ul id="listLimiting" class="list"></ul>
+          </div>
+          <div>
+            <h3>Prioritas Tindakan</h3>
+            <ol id="listPriority" class="list numbered"></ol>
+          </div>
+          <div>
+            <h3>Pupuk</h3>
+            <ul id="listFertilizer" class="list"></ul>
+          </div>
+          <div>
+            <h3>Amelioran & Metode</h3>
+            <ul id="listMethods" class="list"></ul>
+          </div>
+        </div>
+        <p class="planting" id="plantingWindow"></p>
+      </article>
+
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Analisis Manual / Uji Tanah</h2>
+          <p>Rule-based fuzzy atau Machine Learning (Random Forest / Decision Tree)</p>
+        </header>
+        <form id="analyzeForm" class="form-grid">
+          <label>Kelembapan %
+            <input type="number" name="soil_moisture" min="0" max="100" step="0.1" value="60" required />
+          </label>
+          <label>Suhu tanah °C
+            <input type="number" name="soil_temp" step="0.1" value="28" required />
+          </label>
+          <label>pH
+            <input type="number" name="soil_ph" min="0" max="14" step="0.1" value="6.0" required />
+          </label>
+          <label>Drainase (0–1)
+            <input type="number" name="drainage_score" min="0" max="1" step="0.05" value="0.8" />
+          </label>
+          <label>C-Organik %
+            <input type="number" name="organic_carbon" step="0.1" value="2.0" />
+          </label>
+          <label>N (rel)
+            <input type="number" name="nitrogen" step="1" value="55" />
+          </label>
+          <label>P (rel)
+            <input type="number" name="phosphorus" step="1" value="45" />
+          </label>
+          <label>K (rel)
+            <input type="number" name="potassium" step="1" value="60" />
+          </label>
+          <label class="span-2">Metode AI
+            <select name="method" id="methodSelect">
+              <option value="fuzzy">Fuzzy / Rule-based</option>
+              <option value="random_forest">Random Forest</option>
+              <option value="decision_tree">Decision Tree</option>
+            </select>
+          </label>
+          <div class="span-2 form-actions">
+            <button type="submit" class="btn primary">Analisis Sekarang</button>
+            <button type="button" class="btn" id="btnLoadLab">Muat Data Lab Terakhir</button>
+          </div>
+        </form>
+
+        <details class="lab-box">
+          <summary>Input uji tanah laboratorium</summary>
+          <form id="labForm" class="form-grid compact">
+            <label>C-Organik<input type="number" name="organic_carbon" step="0.1" /></label>
+            <label>N<input type="number" name="nitrogen" step="0.1" /></label>
+            <label>P<input type="number" name="phosphorus" step="0.1" /></label>
+            <label>K<input type="number" name="potassium" step="0.1" /></label>
+            <label>KTK / CEC<input type="number" name="cec" step="0.1" /></label>
+            <label>Tekstur<input type="text" name="texture" placeholder="lempung berpasir" /></label>
+            <label class="span-2">Catatan<textarea name="notes" rows="2"></textarea></label>
+            <div class="span-2"><button type="submit" class="btn">Simpan Uji Tanah</button></div>
+          </form>
+        </details>
+      </article>
+    </section>
+
+    <section class="panel factors-panel">
+      <header class="panel-head">
+        <h2>Detail Faktor Fuzzy Membership</h2>
+        <p>Mudah dijelaskan ke petani — semakin tinggi membership, semakin mendekati ideal</p>
+      </header>
+      <div id="factorCards" class="factor-cards"></div>
+    </section>
+
+    <section class="panel roles-panel">
+      <header class="panel-head">
+        <h2>Peran & Saluran Notifikasi</h2>
+        <p>Petani · Penyuluh · Kelompok Tani — Email / Telegram / WhatsApp / Web</p>
+      </header>
+      <div class="roles">
+        <div><strong>Petani</strong><span>Status lahan & tindakan harian</span></div>
+        <div><strong>Penyuluh</strong><span>Rekomendasi pupuk & metode</span></div>
+        <div><strong>Kelompok Tani</strong><span>Jendela tanam musiman</span></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="drawer" id="notifDrawer" hidden>
+    <div class="drawer-head">
+      <h2>Notifikasi</h2>
+      <button type="button" class="btn ghost" id="btnCloseNotif">Tutup</button>
+    </div>
+    <div id="notifList" class="notif-list"></div>
+  </aside>
+  <div class="drawer-backdrop" id="notifBackdrop" hidden></div>
+
+  <footer class="footer">
+    <p>BawangGuard IoT — ESP32 · MQTT/HTTPS · FastAPI · PostgreSQL/SQLite · Fuzzy + Random Forest</p>
+  </footer>
+</body>
+</html>
