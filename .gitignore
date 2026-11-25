@@ -1,26 +1,7 @@
-# Python
+﻿.venv/
+backend/.venv/
 __pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-venv/
+*.pyc
 .env
-.env.*
-
-# Runtime / local data
-data/*.db
-data/models/
 *.db
-
-# IDE / OS
 .vscode/
-.idea/
-.DS_Store
-Thumbs.db
-*.log
-
-# Build
-dist/
-build/
-.pytest_cache/
-.mypy_cache/

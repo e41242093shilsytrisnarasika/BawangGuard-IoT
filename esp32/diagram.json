@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "author": "Velxio",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-velxio-esp32",
+      "id": "esp32",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ssd1306-i2c-4pin",
+      "id": "ssd1306_i2c_4pin_1795231497018_ifomoonmp",
+      "top": 43,
+      "left": 850,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-grove-relay",
+      "id": "grove_relay_1795231535865_drf8a5829",
+      "top": -283,
+      "left": 374,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-grove-soil-moisture",
+      "id": "grove_soil_moisture_1795231561377_kjz6d7f1d",
+      "top": 101,
+      "left": 944,
+      "rotate": 270,
+      "attrs": {
+        "moisture": 30
+      }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht22_1795231578186_nxuero3kt",
+      "top": -265,
+      "left": 586,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-breadboard",
+      "id": "breadboard_1795231638842_xvlhi30fp",
+      "top": 22,
+      "left": 219,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "esp32:GND",
+      "breadboard_1795231638842_xvlhi30fp:tp.1",
+      "black",
+      []
+    ],
+    [
+      "esp32:3V3",
+      "breadboard_1795231638842_xvlhi30fp:tn.1",
+      "#cc0000",
+      []
+    ],
+    [
+      "ssd1306_i2c_4pin_1795231497018_ifomoonmp:GND",
+      "breadboard_1795231638842_xvlhi30fp:tp.3",
+      "black",
+      []
+    ],
+    [
+      "breadboard_1795231638842_xvlhi30fp:tn.3",
+      "ssd1306_i2c_4pin_1795231497018_ifomoonmp:VCC",
+      "#cc0000",
+      []
+    ],
+    [
+      "grove_soil_moisture_1795231561377_kjz6d7f1d:GND",
+      "breadboard_1795231638842_xvlhi30fp:tp.4",
+      "black",
+      []
+    ],
+    [
+      "grove_soil_moisture_1795231561377_kjz6d7f1d:VCC",
+      "breadboard_1795231638842_xvlhi30fp:tn.4",
+      "#cc0000",
+      []
+    ],
+    [
+      "dht22_1795231578186_nxuero3kt:GND",
+      "breadboard_1795231638842_xvlhi30fp:tp.5",
+      "black",
+      []
+    ],
+    [
+      "dht22_1795231578186_nxuero3kt:VCC",
+      "breadboard_1795231638842_xvlhi30fp:tn.5",
+      "#cc0000",
+      []
+    ],
+    [
+      "grove_relay_1795231535865_drf8a5829:GND",
+      "breadboard_1795231638842_xvlhi30fp:tp.6",
+      "black",
+      []
+    ],
+    [
+      "grove_relay_1795231535865_drf8a5829:VCC",
+      "breadboard_1795231638842_xvlhi30fp:tn.6",
+      "#cc0000",
+      []
+    ],
+    [
+      "esp32:21",
+      "ssd1306_i2c_4pin_1795231497018_ifomoonmp:SDA",
+      "#22c55e",
+      []
+    ],
+    [
+      "ssd1306_i2c_4pin_1795231497018_ifomoonmp:SCL",
+      "esp32:22",
+      "#22c55e",
+      []
+    ],
+    [
+      "dht22_1795231578186_nxuero3kt:SDA",
+      "esp32:4",
+      "cyan",
+      []
+    ],
+    [
+      "grove_soil_moisture_1795231561377_kjz6d7f1d:SIG",
+      "esp32:34",
+      "#8B00FF",
+      []
+    ],
+    [
+      "esp32:15",
+      "grove_relay_1795231535865_drf8a5829:SIG",
+      "#22c55e",
+      []
+    ]
+  ]
+}
